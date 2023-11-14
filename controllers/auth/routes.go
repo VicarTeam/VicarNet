@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"log"
 	"time"
 	"vicarnet/db"
 	"vicarnet/util"
@@ -44,6 +45,7 @@ func register(c *gin.Context) {
 	activationCode := uuid.New().String()
 	activationExp := time.Now().Add(time.Minute * 15)
 	db.Cache.Set("register:"+activationCode, dto, &activationExp)
+	log.Println("activation code: " + activationCode)
 
 	util.SendMail(dto.Email, "VicarNet - Activation", "Your activation code is: "+activationCode+"\n\nThis code will expire in 15 minutes.")
 
@@ -106,6 +108,7 @@ func beginRecoverAccount(c *gin.Context) {
 	recoverCode := uuid.New().String()
 	recoverExp := time.Now().Add(time.Minute * 15)
 	db.Cache.Set("recover:"+recoverCode, user, &recoverExp)
+	log.Println("recover code: " + recoverCode)
 
 	util.SendMail(user.Email, "VicarNet - Recover", "Your recover code is: "+recoverCode+"\n\nThis code will expire in 15 minutes.")
 
