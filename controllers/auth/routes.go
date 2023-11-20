@@ -2,6 +2,7 @@ package auth
 
 import (
 	"log"
+	"strings"
 	"time"
 	"vicarnet/db"
 	"vicarnet/util"
@@ -47,7 +48,11 @@ func register(c *gin.Context) {
 	db.Cache.Set("register:"+activationCode, dto, &activationExp)
 	log.Println("activation code: " + activationCode)
 
-	util.SendMail(dto.Email, "VicarNet - Activation", "Your activation code is: "+activationCode+"\n\nThis code will expire in 15 minutes.")
+	if strings.Contains(dto.Email, "@") {
+		util.SendMail(dto.Email, "VicarNet - Activation", "Your activation code is: "+activationCode+"\n\nThis code will expire in 15 minutes.")
+	} else {
+		util.SendCodeThroughDiscord(dto.Email, activationCode, "15 minutes")
+	}
 
 	c.JSON(202, gin.H{"message": "await activation"})
 }
@@ -110,7 +115,11 @@ func beginRecoverAccount(c *gin.Context) {
 	db.Cache.Set("recover:"+recoverCode, user, &recoverExp)
 	log.Println("recover code: " + recoverCode)
 
-	util.SendMail(user.Email, "VicarNet - Recover", "Your recover code is: "+recoverCode+"\n\nThis code will expire in 15 minutes.")
+	if strings.Contains(user.Email, "@") {
+		util.SendMail(user.Email, "VicarNet - Recover", "Your recover code is: "+recoverCode+"\n\nThis code will expire in 15 minutes.")
+	} else {
+		util.SendCodeThroughDiscord(user.Email, recoverCode, "15 minutes")
+	}
 
 	c.JSON(202, gin.H{"message": "await recover"})
 }

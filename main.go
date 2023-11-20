@@ -4,6 +4,7 @@ import (
 	"os"
 	"vicarnet/controllers"
 	"vicarnet/db"
+	"vicarnet/util"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/joho/godotenv/autoload"
@@ -11,6 +12,7 @@ import (
 
 func main() {
 	db.Init()
+	util.InitBot()
 
 	r := gin.Default()
 	r.Use(cors())
